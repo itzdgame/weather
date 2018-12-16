@@ -1,0 +1,38 @@
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet">
+<fieldset class="col-12 text-center">
+    <legend>Weather Data Finder</legend>
+    <label for="enter_location">Type Location to Find Weather Data:</label>
+    <input type="text" name="enter_location" id="enter_location" onchange="javascript:get_weather_data(this.value);">
+    <div>
+        <span id="image"></span><br>
+        <span id="max_Temp"></span><br>
+        <span id="humidity"></span>
+    </div> 
+</fieldset>
+
+<script>
+    function get_weather_data(location) {
+        if(location.length < 0){
+            return
+        }else{
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function(){
+                if(xhttp.readyState == 4){
+                    var data = JSON.parse(xhttp.responseText);
+                    if(data.cod == 404){
+                        document.getElementById("max_Temp").innerHTML = "Invalid Location";
+                        document.getElementById("humidity").innerHTML = "invalid Location";
+                        document.getElementById("image").innerHTML = "";
+                        return;
+                    }
+                    console.dir(data);
+                    document.getElementById("max_Temp").innerHTML = (data.main.temp - 273.15).toFixed(2) + " <sup>o</sup> C"; // convertion from kalvin to Celcius
+                    document.getElementById("humidity").innerHTML = (data.main.humidity) + "% Humidity";
+                    document.getElementById("image").innerHTML = "<img src='https://openweathermap.org/img/w/" + data.weather[0].icon + ".png'/><br> " + data.weather[0].main;
+                }
+            };
+            xhttp.open("GET", "/temp/get_weather?location=" + location, true);
+            xhttp.send();
+        }
+    }
+</script>
